@@ -12,7 +12,7 @@ CODEC="$AUDIO $VIDEO -movflags faststart"
 FF="ffmpeg -pattern_type glob"
 #-start_number 837 
 
-$FF -r 1 -i "*.png" $CODEC 20180821.mp4
+$FF -r 1 -i "*.png" $CODEC -y 20180821.mp4
 
 # Контейнер: MP4
 # Помещайте элементы moov atom в начало файла. Это ускорит запуск видео.
