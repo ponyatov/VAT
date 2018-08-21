@@ -1,0 +1,3 @@
+#!/bin/sh
+ffmpeg -framerate 25 -i *.png -c:v libx264 -profile:v high -crf 20 -pix_fmt yuv420p 20180821.mp4
+
