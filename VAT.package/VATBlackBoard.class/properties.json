@@ -6,6 +6,6 @@
 	"pools" : [ ],
 	"classvars" : [ ],
 	"instvars" : [ ],
-	"name" : "BlackBoard",
+	"name" : "VATBlackBoard",
 	"type" : "normal"
 }

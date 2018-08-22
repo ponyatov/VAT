@@ -1,0 +1,11 @@
+{
+	"commentStamp" : "DmitryPonyatov 8/22/2018 13:51",
+	"super" : "Object",
+	"category" : "VAT",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [ ],
+	"name" : "VATImage",
+	"type" : "normal"
+}
