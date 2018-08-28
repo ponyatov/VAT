@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# grab video from (partial) screenshot
+
+# X11 geometry window will be grabbed
+W=1280
+H=720
+SIZE=$W"x"$H
+GEOM="$SIZE+0+0"
+
+# current date YYMMDD
+DATE=$(date +%y%m%d)
+# current time HHMMSS
+TIME=$(date +%H%M%S)
+
+# directory will be used for grab
+DIR=~/Dropbox/VAT/$DATE
+mkdir -p $DIR
+
+# file name
+FILE=$DIR/$DATE\_$TIME.mp4
+
+# run ffmpeg
+
+# X11 grabbing and size
+X11GRAB="-video_size $SIZE -f x11grab -i :0.0"
+
+# lossless encoding
+VIDEO="-framerate 25 -c:v libx264 -crf 0 -preset ultrafast "
+
+ffmpeg $X11GRAB $VIDEO $FILE
+

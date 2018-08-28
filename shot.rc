@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# make (partial) screenshot
+
+# X11 geometry window will be grabbed
+GEOM=1280x720+0+0
+
+# current date YYMMDD
+DATE=$(date +%y%m%d)
+# current time HHMMSS
+TIME=$(date +%H%M%S)
+
+# directory will be used for grab
+DIR=~/Dropbox/VAT/$DATE
+mkdir -p $DIR
+
+# file name
+PNG=$DIR/$DATE\_$TIME.png
+
+# run ImageMagic/import
+import -window root -crop $GEOM -quality 100 $PNG

@@ -4,15 +4,15 @@ CURDIR=`pwd | egrep -o "[0-9]+$"`
 
 AUDIO="-codec:a aac -strict -2 -b:a 384 -r:a 48000"
 
-# lossless
 VIDEO="-vcodec libx264 -preset veryslow -qp 0 -crf 0 -bf 2 -flags +cgop -pix_fmt yuv420p "
+# lossless not works with YouTube
+VIDEO="-c:v libx264 -crf 0 -preset ultrafast -pix_fmt yuv420p "
 
 CODEC="$AUDIO $VIDEO -movflags faststart"
 
 FF="ffmpeg -pattern_type glob"
 
 $FF -r .5 -i "??????_??????.png" $CODEC -y $CURDIR.mp4
-# && mplayer 20180821.mp4
 
 # Контейнер: MP4
 # Помещайте элементы moov atom в начало файла. Это ускорит запуск видео.
