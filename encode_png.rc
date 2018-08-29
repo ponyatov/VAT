@@ -1,6 +1,6 @@
 #!/bin/sh
 
-CURDIR=`pwd | egrep -o "[0-9]+$"`
+CURDIR=`pwd | egrep -o "[a-zA-Z_0-9]+$"`
 
 AUDIO="-codec:a aac -strict -2 -b:a 384 -r:a 48000"
 
@@ -12,7 +12,10 @@ CODEC="$AUDIO $VIDEO -movflags faststart"
 
 FF="ffmpeg -pattern_type glob"
 
-$FF -r .5 -i "??????_??????.png" $CODEC -y $CURDIR.mp4
+for f in `ls ??????_??????.png | sort`; do
+	MP4=`echo $f|sed "s/\.png$/.mp4/g"`;
+	ffmpeg -r .5 -i $f $CODEC -y $MP4 ; 
+done
 
 # Контейнер: MP4
 # Помещайте элементы moov atom в начало файла. Это ускорит запуск видео.

@@ -12,10 +12,12 @@ CODEC="$AUDIO $VIDEO -movflags faststart"
 
 FF="ffmpeg -pattern_type glob"
 
-echo > files
-for f in `ls ??????_??????.mp4 | sort`; do echo "file '$f'" >> files; done
+#echo > files
+#for f in `ls ??????_??????.* | egrep "" | sort`; do echo "file '$f'" >> files; done
 
-ffmpeg -f concat -i files -c copy $CURDIR.mp4
+#ffmpeg -f concat -i files -v copy $CURDIR.mp4
+echo ffmpeg `../files.py` -c:v copy -c:a aac $CURDIR.mp4
+#-c:v copy -c:a aac -strict experimental
 
 # Контейнер: MP4
 # Помещайте элементы moov atom в начало файла. Это ускорит запуск видео.
