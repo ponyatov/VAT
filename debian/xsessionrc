@@ -1,0 +1,13 @@
+. ~/.setenv
+
+xbindkeys &
+
+#sh -c "eclipse/eclipse" &
+
+dropbox start &
+
+DIR=Smalltalk/ModelDriven
+
+sh -c "cd $DIR ; git gui & " &
+sh -c "cd $DIR ; xterm   & " &
+

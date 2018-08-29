@@ -1,0 +1,47 @@
+
+"~/lock.rc"
+    m:0x0 + c:127
+    Pause
+
+"xterm"
+    m:0x0 + c:78
+    Scroll_Lock
+
+"import png:-|xclip -selection clipboard -t image/png"
+    m:0x0 + c:107
+    Print
+
+"~/Dropbox/VAT/shot.rc"
+    m:0x1 + c:107
+    Shift + Print
+
+"~/Dropbox/VAT/grab.rc"
+    m:0x4 + c:107
+    Control + Print
+
+"killall -INT ffmpeg"
+    m:0x15 + c:107
+    Control+Shift+Mod2 + Print
+
+"amixer set Master toggle"
+    m:0x0 + c:121
+    XF86AudioMute
+"amixer set Master 5%-"
+    m:0x0 + c:122
+    XF86AudioLowerVolume
+"amixer set Master 5%+"
+    m:0x0 + c:123
+    XF86AudioRaiseVolume
+
+"google-chrome"
+    m:0x0 + c:225
+    XF86Search
+"google-chrome"
+    m:0x40 + c:71
+    Mod4 + F5
+"google-chrome"
+    m:0x0 + c:180
+    XF86HomePage
+
+
+
