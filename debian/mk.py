@@ -47,10 +47,11 @@ def dump():
 for i in F:
 	if i+'.png'	in F[i]:
 		print >>mk,'\n%s.mp4: %s.png'%(i,i)
-		print >>mk,'\techo ffmpeg -i $< -r .2 $(VIDEO) -y $@'
+		print >>mk,'\tffmpeg -i $< -r .2 $(VIDEO) -y $@'
 		MP4 += [i+'.mp4']
 	if i+'.en' in F[i] or i+'.ru' in F[i]:
-		print >>mk,'\n%s.mix.mp4: %s.mp4'%(i,i)
+		print >>mk,'\n%s.mix.mp4: %s.mp4 %s.wav'%(i,i,i)
+		print >>mk,'%s.wav: %s.en %s.ru'%(i,i,i)
 		MP4 += [i+'.mix.mp4']
 
 print >>mk,'''
@@ -61,7 +62,10 @@ go:
 	festival --tts --language russian $(FILE).ru 
 '''
 
-print >>mk, '''
-$(CWD).mp4: %s
-'''% reduce(lambda a,b:a+' '+b,MP4)
+print >>mk, '$(CWD).mp4: files\nfiles: %s'% reduce(lambda a,b:a+' '+b,MP4)
+
+files = open('files','w')
+for i in MP4:
+	print >> files , "file '%s'" % i
+files.close()
 
