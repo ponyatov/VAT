@@ -1,0 +1,9 @@
+Hello
+
+The next volume of smalltalk-etudes is devoted to adding voice synthesis in Linux
+
+using the Festival package.
+
+The festival is an automatic speech synthesis system, which allows you to get an audio file from specially prepared text 
+and then embed the audio track into the video lecture fragment.
+

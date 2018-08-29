@@ -1,0 +1,12 @@
+#!/bin/sh
+
+CURDIR=`pwd | egrep -o "[a-zA-Z_0-9]+$"`
+
+for f in `ls ??????_??????.en | sort`; do
+	text2wave -eval "(voice_kal_diphone)" $f -o $f.wav;
+done
+
+for f in `ls ??????_??????.ru | sort`; do
+	text2wave -eval "(voice_msu_ru_nsh_clunits)" $f -o $f.wav;
+done
+
