@@ -105,7 +105,7 @@ VIDEO = -vcodec libx264 -preset veryslow -qp 0 -crf 0 -bf 2 -flags +cgop -pix_fm
 %.wav: %.mix
 \tffmpeg -f concat -i $< -c copy -y $@
 
-%.mp4: %.png.mp4 %.wav
+%.mix.mp4: %.png.mp4 %.wav
 \tffmpeg -i $(word 1,$^) -i $(word 2,$^) -c:v copy -y $@
 
 
