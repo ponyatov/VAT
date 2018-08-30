@@ -21,6 +21,8 @@ print >>mk,'.PHONY: all\nall: $(CWD).mp4\n'
 
 MP4=[]
 
+clean=['files']
+
 # get all files with YYMMDD_HHMMSS pattern
 files = sorted(filter(lambda x:re.match(r'\d+_\d+\.',x),os.listdir('.')))
 #print files
@@ -49,6 +51,7 @@ for i in sorted(F):
 		video = i+'.png.mp4'
 		print >>mk,'%s: %s.png'%(video,i)
 		MP4 += [video]
+		clean += [video]
 	if i+'.en' in F[i] or i+'.ru' in F[i]:
 		print >>mk,'%s.mix.mp4: %s %s.wav'%(i,video,i)
 		if i+'.en' in F[i]:
@@ -58,11 +61,14 @@ for i in sorted(F):
 			ru = '%s.ru.wav'%i
 		else: ru=''
 		print >>mk,'%s.wav: %s.mix'%(i,i)
+		clean += ['%s.mix'%i]
 		print >>mk,'%s.mix: %s %s\n\t../mixfiles.py $@ $^'%(i,en,ru)
 		if en:
 			print >>mk,'%s.en.wav: %s.en'%(i,i)
+			clean += ['%s.en.wav'%i]
 		if ru:
 			print >>mk,'%s.ru.wav: %s.ru'%(i,i)
+			clean += ['%s.ru.wav'%i]
 		MP4 = MP4[:-1] + [i+'.mix.mp4']
 
 print >>mk,'''
@@ -108,5 +114,9 @@ VIDEO = -vcodec libx264 -preset veryslow -qp 0 -crf 0 -bf 2 -flags +cgop -pix_fm
 %.mix.mp4: %.png.mp4 %.wav
 \tffmpeg -i $(word 1,$^) -i $(word 2,$^) -c:v copy -y $@
 
-
 '''
+
+print >>mk,'''.PHONY: clean
+clean:
+	rm -f $(CWD).mp4 %s
+''' % reduce(lambda a,b:a+' '+b,clean)
