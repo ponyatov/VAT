@@ -16,9 +16,6 @@ mk = open('Makefile','w')
 
 print >>mk,'CWD = $(notdir $(CURDIR))\n'
 
-# ffmpeg options
-print >>mk,'VIDEO = -vcodec libx264 -preset veryslow -qp 0 -crf 0 -bf 2 -flags +cgop -pix_fmt yuv420p\n'
-
 # default target
 print >>mk,'.PHONY: all\nall: $(CWD).mp4\n'
 
@@ -45,14 +42,26 @@ def dump():
 #dump()
 
 for i in F:
+	if i+'.mp4' in F[i]:
+		video = i+'.mp4'
 	if i+'.png'	in F[i]:
-		print >>mk,'\n%s.mp4: %s.png'%(i,i)
-		print >>mk,'\tffmpeg -i $< -r .2 $(VIDEO) -y $@'
-		MP4 += [i+'.mp4']
+		video = i+'.png.mp4'
+		print >>mk,'%s: %s.png'%(video,i)
 	if i+'.en' in F[i] or i+'.ru' in F[i]:
-		print >>mk,'\n%s.mix.mp4: %s.mp4 %s.wav'%(i,i,i)
-		print >>mk,'%s.wav: %s.en %s.ru'%(i,i,i)
-		MP4 += [i+'.mix.mp4']
+		print >>mk,'%s.mp4: %s %s.wav'%(i,video,i)
+		if i+'.en' in F[i]:
+			en = '%s.en.wav'%i
+		else: en=''
+		if i+'.ru' in F[i]:
+			ru = '%s.ru.wav'%i
+		else: ru=''
+		print >>mk,'%s.wav: %s.mix'%(i,i)
+		print >>mk,'%s.mix: %s %s\n\t../mixfiles.py $@ $^'%(i,en,ru)
+		if en:
+			print >>mk,'%s.en.wav: %s.en'%(i,i)
+		if ru:
+			print >>mk,'%s.ru.wav: %s.ru'%(i,i)
+	MP4 += [i+'.mp4']
 
 print >>mk,'''
 FILE=180829_140652
@@ -62,10 +71,37 @@ go:
 	festival --tts --language russian $(FILE).ru 
 '''
 
-print >>mk, '$(CWD).mp4: files\nfiles: %s'% reduce(lambda a,b:a+' '+b,MP4)
+print >>mk, '$(CWD).mp4: files\nfiles: %s\n\t../mixfiles.py $@ $^'% reduce(lambda a,b:a+' '+b,MP4)
 
-files = open('files','w')
-for i in MP4:
-	print >> files , "file '%s'" % i
-files.close()
+#files = open('files','w')
+#for i in MP4:
+#	print >> files , "file '%s'" % i
+#files.close()
 
+print >> mk , '''
+
+# ffmpeg options
+
+VIDEO = -vcodec libx264 -preset veryslow -qp 0 -crf 0 -bf 2 -flags +cgop -pix_fmt yuv420p
+
+# converting patterns
+
+%.png.mp4: %.png
+\tffmpeg -i $< -r .5 $(VIDEO) -y $@
+
+%.en.wav: %.en
+\ttext2wave -eval "(voice_kal_diphone)" $< -o $@
+
+%.ru.wav: %.ru
+\ttext2wave -eval "(voice_msu_ru_nsh_clunits)" $< -o $@
+
+%.wav: %.mix
+\tffmpeg -f concat -i $< -c copy -y $@
+
+%.mp4: %.png.mp4 %.wav
+\tffmpeg -i $(word 1,$^) -i $(word 2,$^) -c:v copy -y $@
+
+%.mp4: files
+\tffmpeg -f concat -i $< -c copy -y $@
+
+'''
