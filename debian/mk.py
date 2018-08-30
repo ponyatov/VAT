@@ -61,7 +61,7 @@ for i in sorted(F):
 			ru = '%s.ru.wav'%i
 		else: ru=''
 		print >>mk,'%s.wav: %s.mix'%(i,i)
-		clean += ['%s.mix'%i]
+		clean += ['%s.mix'%i,'%s.wav'%i]
 		print >>mk,'%s.mix: %s %s\n\t../mixfiles.py $@ $^'%(i,en,ru)
 		if en:
 			print >>mk,'%s.en.wav: %s.en'%(i,i)
@@ -83,7 +83,7 @@ print >>mk, '''
 $(CWD).mp4: %s
 \t../mixfiles.py files $^
 \tffmpeg -f concat -i files -c:v copy -y $@
-\tmplayer $@
+#\tmplayer $@
 '''% reduce(lambda a,b:a+' '+b,MP4)
 
 #files = open('files','w')
@@ -96,6 +96,8 @@ print >> mk , '''
 # ffmpeg options
 
 VIDEO = -vcodec libx264 -preset veryslow -qp 0 -crf 0 -bf 2 -flags +cgop -pix_fmt yuv420p
+AUDIO = -acodec mp3
+#aac -strict 1 -ab 384k -ar 48000
 
 # converting patterns
 
@@ -109,7 +111,7 @@ VIDEO = -vcodec libx264 -preset veryslow -qp 0 -crf 0 -bf 2 -flags +cgop -pix_fm
 \ttext2wave -eval "(voice_msu_ru_nsh_clunits)" $< -o $@
 
 %.wav: %.mix
-\tffmpeg -f concat -i $< -c copy -y $@
+\tffmpeg -f concat -i $< $(AUDIO) -y $@
 
 %.mix.mp4: %.png.mp4 %.wav
 \tffmpeg -i $(word 1,$^) -i $(word 2,$^) -c:v copy -y $@
