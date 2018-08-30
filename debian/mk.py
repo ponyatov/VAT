@@ -51,7 +51,7 @@ for i in sorted(F):
 		video = i+'.png.mp4'
 		print >>mk,'%s: %s.png'%(video,i)
 		MP4 += [video]
-		clean += [video]
+#		clean += [video]
 	if i+'.en' in F[i] or i+'.ru' in F[i]:
 		print >>mk,'%s.mix.mp4: %s %s.wav'%(i,video,i)
 		if i+'.en' in F[i]:
@@ -61,14 +61,15 @@ for i in sorted(F):
 			ru = '%s.ru.wav'%i
 		else: ru=''
 		print >>mk,'%s.wav: %s.mix'%(i,i)
-		clean += ['%s.mix'%i,'%s.wav'%i]
+#		clean += ['%s.mix'%i,
+		clean += ['%s.wav'%i]
 		print >>mk,'%s.mix: %s %s\n\t../mixfiles.py $@ $^'%(i,en,ru)
 		if en:
 			print >>mk,'%s.en.wav: %s.en'%(i,i)
-			clean += ['%s.en.wav'%i]
+#			clean += ['%s.en.wav'%i]
 		if ru:
 			print >>mk,'%s.ru.wav: %s.ru'%(i,i)
-			clean += ['%s.ru.wav'%i]
+#			clean += ['%s.ru.wav'%i]
 		MP4 = MP4[:-1] + [i+'.mix.mp4']
 
 print >>mk,'''
@@ -82,7 +83,7 @@ go:
 print >>mk, '''
 $(CWD).mp4: %s
 \t../mixfiles.py files $^
-\tffmpeg -f concat -i files -c:v copy -y $@
+\tffmpeg -f concat -i files -c:v copy -an -y $@
 #\tmplayer $@
 '''% reduce(lambda a,b:a+' '+b,MP4)
 
@@ -102,7 +103,7 @@ AUDIO = -acodec mp3
 # converting patterns
 
 %.png.mp4: %.png
-\tffmpeg -i $< -r .5 $(VIDEO) -y $@
+\tffmpeg -i $< -r .3 $(VIDEO) -y $@
 
 %.en.wav: %.en
 \ttext2wave -eval "(voice_kal_diphone)" $< -o $@
@@ -120,5 +121,6 @@ AUDIO = -acodec mp3
 
 print >>mk,'''.PHONY: clean
 clean:
-	rm -f $(CWD).mp4 %s
+	rm -f $(CWD).mp4 *.png.mp4 *.en.wav *.ru.wav *.mix.mp4 *.mix \\
+	%s
 ''' % reduce(lambda a,b:a+' '+b,clean)
