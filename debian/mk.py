@@ -41,14 +41,16 @@ def dump():
 
 #dump()
 
-for i in F:
+for i in sorted(F):
 	if i+'.mp4' in F[i]:
 		video = i+'.mp4'
+		MP4 += [video]
 	if i+'.png'	in F[i]:
 		video = i+'.png.mp4'
 		print >>mk,'%s: %s.png'%(video,i)
+		MP4 += [video]
 	if i+'.en' in F[i] or i+'.ru' in F[i]:
-		print >>mk,'%s.mp4: %s %s.wav'%(i,video,i)
+		print >>mk,'%s.mix.mp4: %s %s.wav'%(i,video,i)
 		if i+'.en' in F[i]:
 			en = '%s.en.wav'%i
 		else: en=''
@@ -61,7 +63,7 @@ for i in F:
 			print >>mk,'%s.en.wav: %s.en'%(i,i)
 		if ru:
 			print >>mk,'%s.ru.wav: %s.ru'%(i,i)
-	MP4 += [i+'.mp4']
+		MP4 = MP4[:-1] + [i+'.mix.mp4']
 
 print >>mk,'''
 FILE=180829_140652
@@ -71,7 +73,12 @@ go:
 	festival --tts --language russian $(FILE).ru 
 '''
 
-print >>mk, '$(CWD).mp4: files\nfiles: %s\n\t../mixfiles.py $@ $^'% reduce(lambda a,b:a+' '+b,MP4)
+print >>mk, '''
+$(CWD).mp4: %s
+\t../mixfiles.py files $^
+\tffmpeg -f concat -i files -c:v copy -y $@
+\tmplayer $@
+'''% reduce(lambda a,b:a+' '+b,MP4)
 
 #files = open('files','w')
 #for i in MP4:
@@ -101,7 +108,5 @@ VIDEO = -vcodec libx264 -preset veryslow -qp 0 -crf 0 -bf 2 -flags +cgop -pix_fm
 %.mp4: %.png.mp4 %.wav
 \tffmpeg -i $(word 1,$^) -i $(word 2,$^) -c:v copy -y $@
 
-%.mp4: files
-\tffmpeg -f concat -i $< -c copy -y $@
 
 '''
