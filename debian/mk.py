@@ -123,4 +123,9 @@ print >>mk,'''.PHONY: clean
 clean:
 	rm -f $(CWD).mp4 *.png.mp4 *.en.wav *.ru.wav *.mix.mp4 *.mix \\
 	%s
+	ls -la --color
 ''' % reduce(lambda a,b:a+' '+b,clean)
+
+mk.close()
+os.system('make')
+
