@@ -17,7 +17,7 @@ mk = open('Makefile','w')
 print >>mk,'CWD = $(notdir $(CURDIR))\n'
 
 # default target
-print >>mk,'.PHONY: all\nall: $(CWD).mp4\n'
+print >>mk,'.PHONY: all\nall: ~/tmp/$(CWD).mp4\n'
 
 MP4=[]
 
@@ -49,11 +49,11 @@ for i in sorted(F):
 		MP4 += [video]
 	if i+'.png'	in F[i]:
 		video = i+'.png.mp4'
-		print >>mk,'%s: %s.png'%(video,i)
-		MP4 += [video]
+		print >>mk,'~/tmp/%s: %s.png'%(video,i)
+		MP4 += ['~/tmp/'+video]
 #		clean += [video]
 	if i+'.en' in F[i] or i+'.ru' in F[i]:
-		print >>mk,'%s.mix.mp4: %s %s.wav'%(i,video,i)
+		print >>mk,'~/tmp/%s.mix.mp4: %s %s.wav'%(i,video,i)
 		if i+'.en' in F[i]:
 			en = '%s.en.wav'%i
 		else: en=''
@@ -72,18 +72,18 @@ for i in sorted(F):
 #			clean += ['%s.ru.wav'%i]
 		MP4 = MP4[:-1] + [i+'.mix.mp4']
 
-print >>mk,'''
-FILE=180829_140652
-
-go:
-#	festival --tts $(FILE).en
-	festival --tts --language russian $(FILE).ru 
-'''
+#print >>mk,'''
+#FILE=180829_140652
+#
+#go:
+##	festival --tts $(FILE).en
+#	festival --tts --language russian $(FILE).ru 
+#'''
 
 print >>mk, '''
-$(CWD).mp4: %s
+~/tmp/$(CWD).mp4: %s
 \t../mixfiles.py files $^
-\tffmpeg -f concat -i files -c:v copy -an -y $@
+\tffmpeg -f concat -i files -c:v copy -an -y -safe 0 $@
 #\tmplayer $@
 '''% reduce(lambda a,b:a+' '+b,MP4)
 
@@ -102,19 +102,19 @@ AUDIO = -acodec mp3
 
 # converting patterns
 
-%.png.mp4: %.png
+~/tmp/%.png.mp4: %.png
 \tffmpeg -i $< -r .3 $(VIDEO) -y $@
 
-%.en.wav: %.en
+~/tmp/%.en.wav: %.en
 \ttext2wave -eval "(voice_kal_diphone)" $< -o $@
 
-%.ru.wav: %.ru
+~/tmp/%.ru.wav: %.ru
 \ttext2wave -eval "(voice_msu_ru_nsh_clunits)" $< -o $@
 
-%.wav: %.mix
+~/tmp/%.wav: %.mix
 \tffmpeg -f concat -i $< $(AUDIO) -y $@
 
-%.mix.mp4: %.png.mp4 %.wav
+~/tmp/%.mix.mp4: %.png.mp4 %.wav
 \tffmpeg -i $(word 1,$^) -i $(word 2,$^) -c:v copy -y $@
 
 '''
