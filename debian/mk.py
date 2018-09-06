@@ -83,7 +83,7 @@ for i in sorted(F):
 print >>mk, '''
 ~/tmp/$(CWD).mp4: %s
 \t../mixfiles.py files $^
-\tffmpeg -f concat -i files -c:v copy -an -y -safe 0 $@
+\tffmpeg -safe 0 -f concat -i files -c:v copy -an -y $@
 #\tmplayer $@
 '''% reduce(lambda a,b:a+' '+b,MP4)
 
